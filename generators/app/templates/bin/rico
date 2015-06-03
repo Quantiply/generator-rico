@@ -92,7 +92,7 @@ def run_command(cmd):
   # print " " 
     
 def install_deps(args):
-  cmd = "pip install --target %s/lib/vendor/ -r jython-requirements.txt" % (get_app_home(), )
+  cmd = "pip install --target %s/lib/vendor/ -r app/requirements.txt" % (get_app_home(), )
   run_command(cmd)
 
 def get_common_cfg(runner, processor):
