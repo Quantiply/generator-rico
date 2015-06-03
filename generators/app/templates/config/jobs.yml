@@ -1,0 +1,21 @@
+test:
+  common:
+    rico:
+      jython.entrypoint: foo.dummy.TestProcessor
+      streams.out: kafka.test-output
+  samza:
+    job.name: test
+    task:
+      inputs: kafka.test-input
+      error: kafka.test-error
+    metrics.reporter.snapshot.stream: kafka.samza-metrics
+    systems.kafka.consumer.auto.offset.reset: smallest
+    systems.kafka.producer.batch.num.messages: "10"
+    stores.bar:
+      factory: org.apache.samza.storage.kv.RocksDbKeyValueStorageEngineFactory
+      changelog: kafka.test-bar.changelog
+      key.serde: str
+      msg.serde: str
+      changelog.replication.factor: 1
+      write.batch.size: 0
+      object.cache.size: 0

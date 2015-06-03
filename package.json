@@ -1,0 +1,32 @@
+{
+  "name": "generator-rico",
+  "version": "0.0.0",
+  "description": "Yeoman generator",
+  "license": "MIT",
+  "main": "app/index.js",
+  "repository": "arrawatia/generator-rico",
+  "author": {
+    "name": "Sumit Arrawatia",
+    "email": "",
+    "url": "https://github.com/arrawatia"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "chalk": "^1.0.0",
+    "mkdirp": "0.5.1",
+    "wrench": "^1.5.8",
+    "yeoman-generator": "^0.19.0",
+    "yosay": "^1.0.2"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}

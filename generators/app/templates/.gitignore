@@ -1,0 +1,13 @@
+*.class
+tmp/*
+logs/*
+build/*
+node_modules/*
+**/.DS_Store
+.idea
+lib/*.jar
+**/dependency-reduced-pom.xml
+**/*.#*
+deploy/*
+state/*
+*.pyc

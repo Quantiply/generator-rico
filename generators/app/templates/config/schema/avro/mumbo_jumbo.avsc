@@ -1,0 +1,39 @@
+{
+  "namespace": "com.quantiply.rico.test",
+  "type": "record",
+  "name": "MumboJumbo",
+  "fields": [
+    {
+      "name": "headers",
+      "type" : {
+        "type" : "record",
+        "name" : "Header",
+        "namespace" : "com.quantiply.rico.test",
+        "fields" : [
+          {
+            "name": "hi",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "payload",
+      "type" : {
+        "type" : "record",
+        "name" : "Payload",
+        "namespace" : "com.quantiply.rico.test",
+        "fields" : [
+          {
+            "name": "mumbo",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "type": "long"
+          }
+        ]
+      }
+    }
+  ]
+}
