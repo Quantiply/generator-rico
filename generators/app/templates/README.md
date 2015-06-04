@@ -5,7 +5,7 @@ Getting started
 ---    
 1. Setup the env by running
  
-        pip install -r bin/requirements.txt
+        pip install -r bin/rico-requirements.txt
         source bin/set_env.bash
         bin/rico build jar
         
