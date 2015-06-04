@@ -1,0 +1,13 @@
+###############################################
+
+test:
+  common:
+     rico:
+       jython.entrypoint: <%= task_name %>
+       streams.out: <%= task_output %>
+   samza:
+     job.name: <%= job_name %>
+     task:
+       inputs: <%= task_input %>
+
+###############################################
