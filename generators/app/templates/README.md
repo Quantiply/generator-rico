@@ -7,7 +7,7 @@ Getting started
  
         pip install -r bin/rico-requirements.txt
         source bin/set_env.bash
-        bin/rico build jar
+        rico build jar
         
 
 2. Run the `test` task by 
