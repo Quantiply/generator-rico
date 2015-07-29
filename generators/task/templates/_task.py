@@ -1,17 +1,19 @@
-from org.apache.samza.system import OutgoingMessageEnvelope, SystemStream
+from com.quantiply.samza.task import BaseTask
+from org.apache.samza.system import OutgoingMessageEnvelope
 
-class <%= taskName %>():
-    def init(self, config, context):
-        self.output = SystemStream("kafka", config.get("rico.streams.out").replace("kafka.", ""))
-        print("jython : Init config : " + str(config))
-        print("jython : Init context : "  + str(context))
+class <%= taskName %>(BaseTask):
+  
+  def _init(self, config, context, metric_adaptor):
+    self.output = self.getSystemStream("out")
+    self.registerDefaultHandler(self.handle_msg)
 
-    def process(self, data, collector, coord):
-        # print("Processsing : " +  str(data))
-        collector.send(OutgoingMessageEnvelope(self.output, data.message))
+  def handle_msg(self, envelope, collector, coordinator):
+    collector.send(OutgoingMessageEnvelope(self.output, envelope.message))
 
-    def window(self, collector, coord):
-        print("Window yay!")
+  #Delete this method if not needed
+  def window(self, collector, coordinator):
+    pass
 
-    def close(self):
-        print("Close!")
+  #Delete this method if not needed
+  def close(self):
+    pass
