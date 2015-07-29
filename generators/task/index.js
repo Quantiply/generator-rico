@@ -18,17 +18,16 @@ module.exports = yeoman.generators.Base.extend({
             message: 'What is your task\'s (fully qualified) class name ?'
         }, {
             name: 'kafkaInputs',
-            message: 'What Kafka topics does this task read from ?'
+            message: 'What Kafka topic(s) does this task read from ?'
         }, {
             name: 'kafkaOutputs',
-            message: 'What Kafka topics does this task write to ?'
+            message: 'What Kafka topic(s) does this task write to ?'
         }];
 
         this.prompt(prompts, function(props) {
             this.props = props;
             // To access props later use this.props.someOption;
             // this.appName = props.appName;
-            console.log(this.props);
             done();
         }.bind(this));
     },
@@ -54,19 +53,30 @@ module.exports = yeoman.generators.Base.extend({
             );
         }
 
+        var that = this;
+        var parseTopicList = function(topicListStr) {
+            that.log(topicListStr);
+            return topicListStr.split(",")
+            .map(function(topic) { return topic.trim(); })
+            .filter(function(topic) { that.log(topic); return topic.length > 0 });
+        };
+        var inTopics = parseTopicList(this.props.kafkaInputs);
+        var outTopics = parseTopicList(this.props.kafkaOutputs);
+
         var context = {
             taskName: splitClassName[splitClassName.length - 1]
         };
         this.template("_task.py", dir + "/" + splitClassName[splitClassName.length - 2] + ".py", context);
+        
         var cfgTemplate = this.read("_jobs.yml");
-
+        
+        this.log(inTopics.map(function(topic) {return "kafka." + topic;}).join(","));
         var context = {
             task_name: this.props.className,
             job_name: this.props.jobName,
-            task_input: this.props.kafkaInputs,
-            task_output: this.props.kafkaOutputs
+            samza_task_inputs: inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
+            task_output: outTopics[0]
         };
-
         var cfg = this.engine(cfgTemplate, context);
         var taskConfigPrompt = chalk.yellow.bold('\nPlease add this config to config/jobs.yml : \n \n');
         this.log(taskConfigPrompt + cfg);

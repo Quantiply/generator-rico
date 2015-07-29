@@ -6,8 +6,8 @@
       jython.entrypoint: <%= task_name %>
       streams.out: <%= task_output %>
     samza:
-      job.name: <%= job_name %>
+      job.name: <%= job_name %><% if (samza_task_inputs) { %>
       task:
-        inputs: <%= task_input %>
+        inputs: <%= samza_task_inputs %><% } %>
 
 ###############################################
