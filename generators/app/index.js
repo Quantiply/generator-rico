@@ -55,7 +55,7 @@ module.exports = yeoman.generators.Base.extend({
             chalk.yellow.bold('pip install -r bin/rico-requirements.txt') +
             ' to install the rico dependencies.' +
             '\nThen run the following to setup the rico enviornment:' +
-            '\n' + chalk.yellow.bold('source bin/set_env.bash') +
+            '\n' + chalk.yellow.bold('. bin/activate') +
             '\n' + chalk.yellow.bold('rico build jar');
 
         this.log(howToInstall);
