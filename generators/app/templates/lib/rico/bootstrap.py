@@ -1,10 +1,11 @@
 import sys
+import os.path
 import logging
 
 def bootstrap(app_home):
     #Add app and lib/vendor directories to the Python path
-    sys.path.append(app_home + "/app")
-    sys.path.append(app_home + "/lib/vendor")
+    sys.path.append(os.path.join(app_home, "app"))
+    sys.path.append(os.path.join(app_home, "lib", "vendor"))
 
 def create_entrypoint(full_name):
     # The Java code expects the class to be a global var named com_quantiply_rico_entrypoint
@@ -21,7 +22,7 @@ def create_entrypoint(full_name):
     try:
         com_quantiply_rico_entrypoint = str_to_class(module_name, class_name)
     except Exception, e:
-        logging.error("Error while loading %s. The most likely cause is that you are importing something that doesnot exist or there is a typo in the imports.\n" % (full_name, ))
+        logging.error("Error while loading %s. The most likely cause is that you are importing something that does not exist or there is a typo in the imports.\n" % (full_name, ))
         raise e
 
 # Credit where it is due : http://stackoverflow.com/a/24674853
