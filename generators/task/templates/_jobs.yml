@@ -3,11 +3,11 @@
 <%= job_name %>:
   common:
     rico:
-       jython.entrypoint: <%= task_name %>
-       streams.out: <%= task_output %>
+      jython.entrypoint: <%= task_name %>
+      streams.out: <%= task_output %>
     samza:
-       job.name: <%= job_name %>
-       task:
-         inputs: <%= task_input %>
+      job.name: <%= job_name %>
+      task:
+        inputs: <%= task_input %>
 
 ###############################################
