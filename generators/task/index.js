@@ -98,22 +98,21 @@ module.exports = yeoman.generators.Base.extend({
         if (outTopicNames.length ==- 0 && props.outTopics.length === 1) {
             outTopicNames = [{topic: props.outTopics[0], nickname: "out"}];
         }
-        this.log("OUT TOPICS");
-        this.log(outTopicNames);
 
         var context = {
-            taskName: splitClassName[splitClassName.length - 1]
+            taskName: splitClassName[splitClassName.length - 1],
+            inTopicNames: inTopicNames,
+            outTopicNames: outTopicNames
         };
         this.template("_task.py", dir + "/" + splitClassName[splitClassName.length - 2] + ".py", context);
 
         var cfgTemplate = this.read("_jobs.yml");
         var context = {
-            task_name: props.className,
-            job_name: props.jobName,
-            in_topic_names: inTopicNames,
-            out_topic_names: outTopicNames,
-            samza_task_inputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
-            task_output: props.outTopics[0]
+            taskName: props.className,
+            jobName: props.jobName,
+            inTopicNames: inTopicNames,
+            outTopicNames: outTopicNames,
+            samzaTaskInputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(",")
         };
         var cfg = this.engine(cfgTemplate, context);
         var taskConfigPrompt = chalk.yellow.bold('\nPlease add this config to config/jobs.yml : \n \n');

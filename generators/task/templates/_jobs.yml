@@ -1,14 +1,14 @@
 ###############################################
 
-<%= job_name %>:
+<%= jobName %>:
   common:
     rico:
-      jython.entrypoint: <%= task_name %><% _.forEach(in_topic_names, function(name) { %>
-      streams.<%- name.nickname %>=<%- name.topic %><% }); %><% _.forEach(out_topic_names, function(name) { %>
+      jython.entrypoint: <%= taskName %><% _.forEach(inTopicNames, function(name) { %>
+      streams.<%- name.nickname %>=<%- name.topic %><% }); %><% _.forEach(outTopicNames, function(name) { %>
       streams.<%- name.nickname %>=<%- name.topic %><% }); %>
     samza:
-      job.name: <%= job_name %><% if (samza_task_inputs) { %>
+      job.name: <%= jobName %><% if (samzaTaskInputs) { %>
       task:
-        inputs: <%= samza_task_inputs %><% } %>
+        inputs: <%= samzaTaskInputs %><% } %>
 
 ###############################################
