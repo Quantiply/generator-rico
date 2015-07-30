@@ -4,7 +4,14 @@ var chalk = require('chalk');
 var yosay = require('yosay');
 var mkdirp = require('mkdirp');
 
-module.exports = yeoman.generators.Base.extend({
+var parseTopicList = function(topicListStr) {
+    return topicListStr.split(",")
+    .map(function(topic) { return topic.trim(); })
+    .filter(function(topic) { return topic.length > 0 });
+};
+
+
+module.exports = yeoman.generators.Base.extend({    
     prompting: function() {
         var done = this.async();
 
@@ -26,14 +33,37 @@ module.exports = yeoman.generators.Base.extend({
 
         this.prompt(prompts, function(props) {
             this.props = props;
+            this.props.inTopics = parseTopicList(this.props.kafkaInputs);
+            this.props.outTopics = parseTopicList(this.props.kafkaOutputs);
             // To access props later use this.props.someOption;
             // this.appName = props.appName;
-            done();
+            var topicsNeedingNicknames = [];
+            if (this.props.inTopics.length > 1) {
+                topicsNeedingNicknames = topicsNeedingNicknames.concat(this.props.inTopics);
+            }
+            if (this.props.outTopics.length > 1) {
+                topicsNeedingNicknames = topicsNeedingNicknames.concat(this.props.outTopics);
+            }
+            
+            if (topicsNeedingNicknames.length > 0) {
+                var prompts = topicsNeedingNicknames.map(function(topic) {
+                    return {name: topic, message: "Nickname for topic: " + topic + ": ", default: topic};
+                });
+                this.prompt(prompts, function(props) {
+                    this.props.nicknames = props;
+                    done();
+                }.bind(this));
+            }
+            else {
+                done();
+            }
         }.bind(this));
     },
 
     writing: function() {
         // this.directory(this.templatePath(""), "bin");
+        
+        this.log(this.props);
 
         var splitClassName = this.props.className.split(".");
         if (splitClassName.length < 2) {
@@ -53,28 +83,16 @@ module.exports = yeoman.generators.Base.extend({
             );
         }
 
-        var that = this;
-        var parseTopicList = function(topicListStr) {
-            that.log(topicListStr);
-            return topicListStr.split(",")
-            .map(function(topic) { return topic.trim(); })
-            .filter(function(topic) { that.log(topic); return topic.length > 0 });
-        };
-        var inTopics = parseTopicList(this.props.kafkaInputs);
-        var outTopics = parseTopicList(this.props.kafkaOutputs);
-
         var context = {
             taskName: splitClassName[splitClassName.length - 1]
         };
         this.template("_task.py", dir + "/" + splitClassName[splitClassName.length - 2] + ".py", context);
         
         var cfgTemplate = this.read("_jobs.yml");
-        
-        this.log(inTopics.map(function(topic) {return "kafka." + topic;}).join(","));
         var context = {
             task_name: this.props.className,
             job_name: this.props.jobName,
-            samza_task_inputs: inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
+            samza_task_inputs: this.props.inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
             task_output: outTopics[0]
         };
         var cfg = this.engine(cfgTemplate, context);
