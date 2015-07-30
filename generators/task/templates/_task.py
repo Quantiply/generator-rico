@@ -28,6 +28,7 @@ if (inTopicNames.length > 1) { %>
     collector.send(OutgoingMessageEnvelope(self.<%- out.nickname %>, envelope.message))<%
   });
 } %>
+
   #Delete this method if not needed
   def window(self, collector, coordinator):
     pass
