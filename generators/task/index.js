@@ -3,6 +3,7 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var mkdirp = require('mkdirp');
+var _ = require('lodash');
 
 var parseTopicList = function(topicListStr) {
     return topicListStr.split(",")
@@ -55,6 +56,7 @@ module.exports = yeoman.generators.Base.extend({
                 }.bind(this));
             }
             else {
+                this.props.nicknames = [];
                 done();
             }
         }.bind(this));
@@ -62,19 +64,20 @@ module.exports = yeoman.generators.Base.extend({
 
     writing: function() {
         // this.directory(this.templatePath(""), "bin");
-        
-        this.log(this.props);
 
-        var splitClassName = this.props.className.split(".");
+        var props = this.props;
+        this.log(props);
+
+        var splitClassName = props.className.split(".");
         if (splitClassName.length < 2) {
-            var err = chalk.red.bold('\nNo package name for [ ' + this.props.className + ' ].Package name is required for task class.');
+            var err = chalk.red.bold('\nNo package name for [ ' + props.className + ' ].Package name is required for task class.');
             this.log(err);
             return;
         };
 
         var dir = "app";
         if (splitClassName.length > 2) {
-            var packageName = this.props.className.split(".").slice(0, -2).join("/");
+            var packageName = props.className.split(".").slice(0, -2).join("/");
             dir = "app/" + packageName;
             mkdirp(dir);
             this.fs.copy(
@@ -83,17 +86,34 @@ module.exports = yeoman.generators.Base.extend({
             );
         }
 
+        var topicNames = _.map(props.nicknames, function (nickname, topic) {
+            return {topic: topic, nickname: nickname};
+        });
+        var inTopicNames = topicNames.filter(function (name) {
+            return _.includes(props.inTopics, name.topic);
+        });
+        var outTopicNames = topicNames.filter(function (name) {
+            return _.includes(props.outTopics, name.topic);
+        });
+        if (outTopicNames.length ==- 0 && props.outTopics.length === 1) {
+            outTopicNames = [{topic: props.outTopics[0], nickname: "out"}];
+        }
+        this.log("OUT TOPICS");
+        this.log(outTopicNames);
+
         var context = {
             taskName: splitClassName[splitClassName.length - 1]
         };
         this.template("_task.py", dir + "/" + splitClassName[splitClassName.length - 2] + ".py", context);
-        
+
         var cfgTemplate = this.read("_jobs.yml");
         var context = {
-            task_name: this.props.className,
-            job_name: this.props.jobName,
-            samza_task_inputs: this.props.inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
-            task_output: outTopics[0]
+            task_name: props.className,
+            job_name: props.jobName,
+            in_topic_names: inTopicNames,
+            out_topic_names: outTopicNames,
+            samza_task_inputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(","),
+            task_output: props.outTopics[0]
         };
         var cfg = this.engine(cfgTemplate, context);
         var taskConfigPrompt = chalk.yellow.bold('\nPlease add this config to config/jobs.yml : \n \n');

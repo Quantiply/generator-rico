@@ -3,8 +3,9 @@
 <%= job_name %>:
   common:
     rico:
-      jython.entrypoint: <%= task_name %>
-      streams.out: <%= task_output %>
+      jython.entrypoint: <%= task_name %><% _.forEach(in_topic_names, function(name) { %>
+      streams.<%- name.nickname %>=<%- name.topic %><% }); %><% _.forEach(out_topic_names, function(name) { %>
+      streams.<%- name.nickname %>=<%- name.topic %><% }); %>
     samza:
       job.name: <%= job_name %><% if (samza_task_inputs) { %>
       task:
