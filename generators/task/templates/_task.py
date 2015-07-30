@@ -22,6 +22,11 @@ if (inTopicNames.length > 1) { %>
   _.forEach(outTopicNames, function(out) { %>
     collector.send(OutgoingMessageEnvelope(self.<%- out.nickname %>, envelope.message))<%
   });
+} else { %>
+  def handleMsg(self, envelope, collector, coordinator):<%
+  _.forEach(outTopicNames, function(out) { %>
+    collector.send(OutgoingMessageEnvelope(self.<%- out.nickname %>, envelope.message))<%
+  });
 } %>
   #Delete this method if not needed
   def window(self, collector, coordinator):
