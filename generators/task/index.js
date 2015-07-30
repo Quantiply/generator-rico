@@ -92,6 +92,9 @@ module.exports = yeoman.generators.Base.extend({
         var inTopicNames = topicNames.filter(function (name) {
             return _.includes(props.inTopics, name.topic);
         });
+        inTopicNames.forEach(function(name) {
+            name.processFunc = _.camelCase("process_" + name.nickname + "_msg");
+        });
         var outTopicNames = topicNames.filter(function (name) {
             return _.includes(props.outTopics, name.topic);
         });
