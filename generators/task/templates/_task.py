@@ -17,10 +17,12 @@ if (inTopicNames.length > 1) {
     self.registerDefaultHandler(self.handleMsg)<%
 } %>
 <%
-if (inTopicNames.length > 1) { %>
-  def handleMsg(self, envelope, collector, coordinator):<%
-  _.forEach(outTopicNames, function(out) { %>
-    collector.send(OutgoingMessageEnvelope(self.<%- out.nickname %>, envelope.message))<%
+if (inTopicNames.length > 1) {
+  _.forEach(inTopicNames, function(inName) { %>
+  def <%- inName.processFunc %>(self, envelope, collector, coordinator):
+    #Handle messages from <%- inName.topic %> topic
+    pass
+<%
   });
 } else { %>
   def handleMsg(self, envelope, collector, coordinator):<%
