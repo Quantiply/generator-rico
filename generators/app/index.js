@@ -12,37 +12,24 @@ module.exports = yeoman.generators.Base.extend({
             'Welcome to the outstanding ' + chalk.red('Rico') + ' generator!'
         ));
 
-        var prompts = [];
-        // {
-        //         name: 'appName',
-        //         message: 'What is your app\'s name ?'
-        //     }];
-
+        var prompts = [
+            {
+                name: 'projectName',
+                message: 'What is your project name ?'
+            }
+        ];
         this.prompt(prompts, function(props) {
             this.props = props;
-            // To access props later use this.props.someOption;
-            this.appName = props.appName;
-
             done();
         }.bind(this));
     },
 
     writing: {
         app: function() {
-
-            console.log("Creating a scafold in the current dir....");
+            this.log("Creating scaffolding in the current dir for project " + this.props.projectName + "...");
 
             this.directory(this.templatePath(), ".");
-
-            // this.directory(this.templatePath("bin"), "bin");
-            // this.fs.copy(
-            //   this.templatePath('_package.json'),
-            //   this.destinationPath('package.json')
-            // );
-            // this.fs.copy(
-            //   this.templatePath('_bower.json'),
-            //   this.destinationPath('bower.json')
-            // );
+            this.template('bin/pom.xml', 'bin/pom.xml', this.props);
         }
 
 
