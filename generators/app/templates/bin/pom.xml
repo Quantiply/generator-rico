@@ -36,7 +36,7 @@
 
   <profiles>
     <profile>
-      <id>cmd-line</id>
+      <id>uber-jar</id>
       <activation>
         <property>
           <name>pkg</name>
@@ -50,10 +50,74 @@
           <version><%= '${rico.version}' %></version>
         </dependency>
       </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>2.3</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <filters>
+                    <filter>
+                      <artifact>*:*</artifact>
+                      <excludes>
+                        <exclude>META-INF/*.SF</exclude>
+                        <exclude>META-INF/*.DSA</exclude>
+                        <exclude>META-INF/*.RSA</exclude>
+                      </excludes>
+                    </filter>
+                  </filters>
+                  <transformers>
+                    <!-- add Main-Class to manifest file -->
+                    <transformer
+                      implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>com.quantiply.samza.CmdLineTaskRunner</mainClass>
+                    </transformer>
+                  </transformers>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>yarn-pkg</id>
+      <activation>
+        <property>
+          <name>pkg</name>
+          <value>yarn</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.samza</groupId>
+          <artifactId>samza-yarn_2.10</artifactId>
+          <version><%= '${samza.version}' %></version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.samza</groupId>
+          <artifactId>samza-shell</artifactId>
+          <classifier>dist</classifier>
+          <type>tgz</type>
+          <version><%= '${samza.version}' %></version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
   <dependencies>
+    <dependency>
+      <groupId>org.apache.samza</groupId>
+      <artifactId>samza-api</artifactId>
+      <version><%= '${samza.version}' %></version>
+    </dependency>
     <dependency>
       <groupId>org.apache.samza</groupId>
       <artifactId>samza-core_2.10</artifactId>
@@ -67,11 +131,6 @@
     <dependency>
       <groupId>org.apache.samza</groupId>
       <artifactId>samza-kafka_2.10</artifactId>
-      <version><%= '${samza.version}' %></version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.samza</groupId>
-      <artifactId>samza-yarn_2.10</artifactId>
       <version><%= '${samza.version}' %></version>
     </dependency>
     <dependency>
@@ -110,41 +169,5 @@
     </dependencies>
     <build>
       <directory><%= '${buildDir}' %></directory>
-      <plugins>
-        <!-- Maven Shade Plugin -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>2.3</version>
-          <executions>
-            <!-- Run shade goal on package phase -->
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>shade</goal>
-              </goals>
-              <configuration>
-                <filters>
-                  <filter>
-                    <artifact>*:*</artifact>
-                    <excludes>
-                      <exclude>META-INF/*.SF</exclude>
-                      <exclude>META-INF/*.DSA</exclude>
-                      <exclude>META-INF/*.RSA</exclude>
-                    </excludes>
-                  </filter>
-                </filters>
-                <transformers>
-                  <!-- add Main-Class to manifest file -->
-                  <transformer
-                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                    <mainClass>com.quantiply.samza.CmdLineTaskRunner</mainClass>
-                  </transformer>
-                </transformers>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
     </build>
   </project>

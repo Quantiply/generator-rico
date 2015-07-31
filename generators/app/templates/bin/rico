@@ -232,22 +232,9 @@ def yarn(args):
   run_command(run)
   
 def build_jar(args):
-  # if args["local"]:
-    # cmd =  "mvn -f $APP_HOME/bin/local-pom.xml clean package "
-    # cmd += "-DbuildDir=$APP_HOME/build/maven/local  "
-    # cmd += "-Dproject.build.directory=$APP_HOME/build/maven/local "
-    # cmd += "-DsourceDirectory=$APP_HOME/config/schema &&"
-    # cmd += "cp $APP_HOME/build/maven/local/local-*.jar $APP_HOME/lib/"
-    # run_command(cmd)
-
-
-  cmd =  "mvn -f $APP_HOME/bin/samza-pom.xml clean package "
-  cmd += "-DbuildDir=$APP_HOME/build/maven/jar  && "
-  cmd += "cp $APP_HOME/build/maven/jar/samza-*.jar $APP_HOME/lib/"
+  cmd =  "mvn -f $APP_HOME/bin/pom.xml -DbuildDir=$APP_HOME/build/maven/jar -Dpkg=jar clean package"
+  cmd += " && cp $APP_HOME/build/maven/jar/samza-*.jar $APP_HOME/lib/"
   run_command(cmd)
-
-  # else:
-    # print "Command not valid."
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='0.0.1')
