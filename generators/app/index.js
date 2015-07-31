@@ -30,6 +30,7 @@ module.exports = yeoman.generators.Base.extend({
 
             this.directory(this.templatePath(), ".");
             this.template('bin/pom.xml', 'bin/pom.xml', this.props);
+            this.template('bin/yarn-src.xml', 'bin/yarn-src.xml', this.props);
         }
 
 

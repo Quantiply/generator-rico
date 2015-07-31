@@ -7,7 +7,7 @@ Usage:
   rico samza <name> [--env=<env>]
   rico yarn <name> [--env=<env>] [--http=<http_url>]
   rico build
-  rico package <name>
+  rico package
   rico install-deps
   rico test
 
@@ -152,29 +152,25 @@ def samza(args):
 
   run_command(cmd)
 
-def build_package(args):
-  package_name = args["<name>"]
- 
+def copy_yarn_files():
   print "-" * 100
-  print "Copying files to %s/build/package/%s" % (get_app_home(), package_name)
+  print "Copying files to %s/build/package" % (get_app_home())
   print "-" * 100
 
-  copy = "rm -rf $RICO_APP_HOME/build/package/%s && " % (package_name, )
-  copy += "mkdir -p $RICO_APP_HOME/build/package/%s/lib && " % (package_name, )
-  copy += "cp $RICO_APP_HOME/bin/yarn/*.xml $RICO_APP_HOME/build/package/%s/ && " % (package_name, )
-  copy += "cp -r $RICO_APP_HOME/{config,app} $RICO_APP_HOME/build/package/%s/ && " % (package_name, )
-  copy += "cp -r $RICO_APP_HOME/lib/{rico,vendor} $RICO_APP_HOME/build/package/%s/lib/ " % (package_name, ) 
+  copy = "rm -rf $RICO_APP_HOME/build/package/ && "
+  copy += "mkdir -p $RICO_APP_HOME/build/package/lib && "
+  copy += "cp -r $RICO_APP_HOME/{config,app} $RICO_APP_HOME/build/package/ && "
+  copy += "cp -r $RICO_APP_HOME/lib/{rico,vendor} $RICO_APP_HOME/build/package/lib/ "
 
   run_command(copy)
 
-  # Run stuff
-  run_command("mvn package -f $RICO_APP_HOME/build/package/%s/pom.xml" % (package_name , ))
+def deploy_package(args):
+  copy_yarn_files()
+  run_command("mvn -f $RICO_APP_HOME/bin/pom.xml -DbuildDir=$RICO_APP_HOME/build/maven/package -Dpkg=yarn clean deploy")
 
-  run_command("mv $RICO_APP_HOME/build/package/%s/target/*.tar.gz $RICO_APP_HOME/build/package/%s/target/%s.tar.gz" % (package_name, package_name, package_name))
-
-  print "-" * 100
-  print "Package : %s/build/package/%s/target/%s.tar.gz" % (get_app_home(), package_name, package_name)
-  print "-" * 100
+def build_package(args):
+  copy_yarn_files()
+  run_command("mvn -f $RICO_APP_HOME/bin/pom.xml -DbuildDir=$RICO_APP_HOME/build/maven/package -Dpkg=yarn clean package")
 
 def yarn(args):
   processor = args["<name>"]
