@@ -6,10 +6,11 @@ Usage:
   rico local [-d] <name> [--env=<env>]
   rico samza <name> [--env=<env>]
   rico yarn <name> [--env=<env>] [--http=<http_url>]
-  rico build jar 
+  rico build jar
   rico package <name>
   rico install-deps
   rico test
+
 Options:
   -h --help     Show this screen.
   --version     Show version.

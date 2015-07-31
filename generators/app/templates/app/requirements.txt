@@ -1,0 +1,2 @@
+#Add Jython pip dependencies here
+nose

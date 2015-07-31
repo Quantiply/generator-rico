@@ -37,15 +37,12 @@ module.exports = yeoman.generators.Base.extend({
 
     install: function() {
         // this.installDependencies();
-        var howToInstall =
-            '\nPlease run ' +
-            chalk.yellow.bold('pip install -r bin/rico-requirements.txt') +
-            ' to install the rico dependencies.' +
-            '\nThen run the following to setup the rico enviornment:' +
-            '\n' + chalk.yellow.bold('. bin/activate') +
-            '\n' + chalk.yellow.bold('rico build jar');
-
-        this.log(howToInstall);
-
+        this.log('\nPlease run ' + chalk.yellow.bold('pip install -r bin/rico-requirements.txt')
+            + ' to install the dependencies for the rico script.');
+        this.log('Run ' + chalk.yellow.bold('. bin/activate') + ' to setup environment varibles');
+        this.log('Add pip dependencies needed by the job in app/requirements.txt');
+        this.log('Run ' + chalk.yellow.bold('rico install-deps') + ' to install job dependencies');
+        this.log('Run ' + chalk.yellow.bold('rico build jar') + ' to build an uber-jar of java dependencies');
+        this.log('Run ' + chalk.yellow.bold('yo rico:task') + ' to generate a job task skeleton');
     }
 });
