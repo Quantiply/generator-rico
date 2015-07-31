@@ -42,7 +42,7 @@ module.exports = yeoman.generators.Base.extend({
         this.log('Run ' + chalk.yellow.bold('. bin/activate') + ' to setup environment varibles');
         this.log('Add pip dependencies needed by the job in app/requirements.txt');
         this.log('Run ' + chalk.yellow.bold('rico install-deps') + ' to install job dependencies');
-        this.log('Run ' + chalk.yellow.bold('rico build jar') + ' to build an uber-jar of java dependencies');
+        this.log('Run ' + chalk.yellow.bold('rico build') + ' to build an uber-jar of java dependencies');
         this.log('Run ' + chalk.yellow.bold('yo rico:task') + ' to generate a job task skeleton');
     }
 });

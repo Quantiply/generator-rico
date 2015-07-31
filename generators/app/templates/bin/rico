@@ -6,7 +6,7 @@ Usage:
   rico local [-d] <name> [--env=<env>]
   rico samza <name> [--env=<env>]
   rico yarn <name> [--env=<env>] [--http=<http_url>]
-  rico build jar
+  rico build
   rico package <name>
   rico install-deps
   rico test
@@ -81,7 +81,7 @@ def flatten(d, parent_key='', sep='.'):
   
 def get_app_home():
   try:
-    return env['APP_HOME']
+    return env['RICO_APP_HOME']
   except:
     return None
 
@@ -119,8 +119,8 @@ def local(args):
   build_file = "%s/build/%s/%s.properties" % (get_app_home(), runner, processor)
   cfg_to_file(cfg, build_file)
   
-  cmd = "java -Dlog4j.configuration=file:///$APP_HOME/config/log4j.properties "
-  cmd += "-jar $APP_HOME/lib/*.jar "
+  cmd = "java -Dlog4j.configuration=file:///$RICO_APP_HOME/config/log4j.properties "
+  cmd += "-jar $RICO_APP_HOME/lib/*.jar "
   cmd += build_file
 
   run_command(cmd)
@@ -145,8 +145,8 @@ def samza(args):
   build_file = "%s/build/%s/%s.properties" % (get_app_home(), runner, processor)
   cfg_to_file(cfg, build_file)
   
-  cmd = "java -Dlog4j.configuration=file:///$APP_HOME/config/log4j.properties "
-  cmd += "-cp $APP_HOME/lib/*.jar org.apache.samza.job.JobRunner "
+  cmd = "java -Dlog4j.configuration=file:///$RICO_APP_HOME/config/log4j.properties "
+  cmd += "-cp $RICO_APP_HOME/lib/*.jar org.apache.samza.job.JobRunner "
   cmd += "--config-factory=org.apache.samza.config.factories.PropertiesConfigFactory --config-path=file://"
   cmd += build_file
 
@@ -159,18 +159,18 @@ def build_package(args):
   print "Copying files to %s/build/package/%s" % (get_app_home(), package_name)
   print "-" * 100
 
-  copy = "rm -rf $APP_HOME/build/package/%s && " % (package_name, )
-  copy += "mkdir -p $APP_HOME/build/package/%s/lib && " % (package_name, )
-  copy += "cp $APP_HOME/bin/yarn/*.xml $APP_HOME/build/package/%s/ && " % (package_name, )
-  copy += "cp -r $APP_HOME/{config,app} $APP_HOME/build/package/%s/ && " % (package_name, )
-  copy += "cp -r $APP_HOME/lib/{rico,vendor} $APP_HOME/build/package/%s/lib/ " % (package_name, ) 
+  copy = "rm -rf $RICO_APP_HOME/build/package/%s && " % (package_name, )
+  copy += "mkdir -p $RICO_APP_HOME/build/package/%s/lib && " % (package_name, )
+  copy += "cp $RICO_APP_HOME/bin/yarn/*.xml $RICO_APP_HOME/build/package/%s/ && " % (package_name, )
+  copy += "cp -r $RICO_APP_HOME/{config,app} $RICO_APP_HOME/build/package/%s/ && " % (package_name, )
+  copy += "cp -r $RICO_APP_HOME/lib/{rico,vendor} $RICO_APP_HOME/build/package/%s/lib/ " % (package_name, ) 
 
   run_command(copy)
 
   # Run stuff
-  run_command("mvn package -f $APP_HOME/build/package/%s/pom.xml" % (package_name , ))
+  run_command("mvn package -f $RICO_APP_HOME/build/package/%s/pom.xml" % (package_name , ))
 
-  run_command("mv $APP_HOME/build/package/%s/target/*.tar.gz $APP_HOME/build/package/%s/target/%s.tar.gz" % (package_name, package_name, package_name))
+  run_command("mv $RICO_APP_HOME/build/package/%s/target/*.tar.gz $RICO_APP_HOME/build/package/%s/target/%s.tar.gz" % (package_name, package_name, package_name))
 
   print "-" * 100
   print "Package : %s/build/package/%s/target/%s.tar.gz" % (get_app_home(), package_name, package_name)
@@ -199,11 +199,11 @@ def yarn(args):
 
   # Copy stuff to the build dir
   
-  copy = "rm -rf $APP_HOME/build/yarn/%s && " % (processor, )
-  copy += "mkdir -p $APP_HOME/build/yarn/%s/lib && " % (processor, )
-  copy += "cp $APP_HOME/bin/yarn/*.xml $APP_HOME/build/yarn/%s/ && " % (processor, )
-  copy += "cp -r $APP_HOME/{config,app} $APP_HOME/build/yarn/%s/ && " % (processor, )
-  copy += "cp -r $APP_HOME/lib/{vendor,rico} $APP_HOME/build/yarn/%s/lib/ " % (processor, ) 
+  copy = "rm -rf $RICO_APP_HOME/build/yarn/%s && " % (processor, )
+  copy += "mkdir -p $RICO_APP_HOME/build/yarn/%s/lib && " % (processor, )
+  copy += "cp $RICO_APP_HOME/bin/yarn/*.xml $RICO_APP_HOME/build/yarn/%s/ && " % (processor, )
+  copy += "cp -r $RICO_APP_HOME/{config,app} $RICO_APP_HOME/build/yarn/%s/ && " % (processor, )
+  copy += "cp -r $RICO_APP_HOME/lib/{vendor,rico} $RICO_APP_HOME/build/yarn/%s/lib/ " % (processor, ) 
 
   run_command(copy)
 
@@ -213,24 +213,24 @@ def yarn(args):
   cfg_to_file(cfg, build_file)
   
   # Run stuff
-  run_command("mvn package -f $APP_HOME/build/yarn/%s/pom.xml" % (processor, ))
+  run_command("mvn package -f $RICO_APP_HOME/build/yarn/%s/pom.xml" % (processor, ))
 
-  run = "mkdir $APP_HOME/build/yarn/%s/target/exploded && " % (processor, )
-  run += "mv $APP_HOME/build/yarn/%s/target/*.tar.gz $APP_HOME/build/yarn/%s/target/%s.tar.gz && " % (processor, processor, processor)
-  run += "tar -xzvf $APP_HOME/build/yarn/%s/target/%s.tar.gz -C $APP_HOME/build/yarn/%s/target/exploded && " % (processor, processor, processor )
-  run += "$APP_HOME/build/yarn/%s/target/exploded/bin/run-job.sh " % (processor, )
+  run = "mkdir $RICO_APP_HOME/build/yarn/%s/target/exploded && " % (processor, )
+  run += "mv $RICO_APP_HOME/build/yarn/%s/target/*.tar.gz $RICO_APP_HOME/build/yarn/%s/target/%s.tar.gz && " % (processor, processor, processor)
+  run += "tar -xzvf $RICO_APP_HOME/build/yarn/%s/target/%s.tar.gz -C $RICO_APP_HOME/build/yarn/%s/target/exploded && " % (processor, processor, processor )
+  run += "$RICO_APP_HOME/build/yarn/%s/target/exploded/bin/run-job.sh " % (processor, )
   run += "--config-factory=org.apache.samza.config.factories.PropertiesConfigFactory "
-  run += "--config-path=file://$APP_HOME/build/yarn/%s/target/exploded/config/%s.properties" % (processor, processor)
+  run += "--config-path=file://$RICO_APP_HOME/build/yarn/%s/target/exploded/config/%s.properties" % (processor, processor)
 
   run_command(run)
   
 def build_jar(args):
-  run_command("mvn -f $APP_HOME/bin/pom.xml -DbuildDir=$APP_HOME/build/maven/jar -Dpkg=jar clean package")
-  run_command("bash -O extglob -c 'cp $APP_HOME/build/maven/jar/!(original-*).jar $APP_HOME/lib/'")
+  run_command("mvn -f $RICO_APP_HOME/bin/pom.xml -DbuildDir=$RICO_APP_HOME/build/maven/jar -Dpkg=jar clean package")
+  run_command("bash -O extglob -c 'cp $RICO_APP_HOME/build/maven/jar/!(original-*).jar $RICO_APP_HOME/lib/'")
 
 def test(args):
-  cmd = "java -Dlog4j.configuration=file:///$APP_HOME/config/log4j.properties "
-  cmd += "-cp $APP_HOME/lib/*.jar org.python.util.jython $APP_HOME/bin/nosetests.py  $APP_HOME/app"
+  cmd = "java -Dlog4j.configuration=file:///$RICO_APP_HOME/config/log4j.properties "
+  cmd += "-cp $RICO_APP_HOME/lib/*.jar org.python.util.jython $RICO_APP_HOME/bin/nosetests.py  $RICO_APP_HOME/app"
   run_command(cmd)
 
 if __name__ == '__main__':
@@ -238,12 +238,12 @@ if __name__ == '__main__':
   # print(args)
 
   if get_app_home() is None:
-    print "APP_HOME is undefined."
+    print "RICO_APP_HOME is undefined."
   elif args["local"] :
     local(args)
   elif args["samza"] :
     samza(args)
-  elif args["build"] and args["jar"]:
+  elif args["build"]:
     build_jar(args)
   elif args["package"]:
     build_package(args)

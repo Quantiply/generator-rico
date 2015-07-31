@@ -7,7 +7,7 @@ Getting started
  
         pip install -r bin/rico-requirements.txt
         . bin/activate
-        rico build jar
+        rico build
         
 
 2. Run the `test` task by 
@@ -152,7 +152,7 @@ Rico tool
     rico local [-d] <name> [--env=<env>] [--full]
     rico samza <name> [--env=<env>]
     rico yarn  <name> [--env=<env>] [--http=<http_url>]
-    rico build jar
+    rico build
     rico package <package_name>
     rico install-deps
 
