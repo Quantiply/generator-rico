@@ -1,8 +1,8 @@
-local:
+cmdline:
     rico:
-        schema.registry.url: "http://localhost:9081"
+        schema.registry.url: "http://localhost:8081"
         string-serde.class: com.quantiply.samza.serde.JSONStringSerde
-        drop.on.error: true
+        drop.on.error: false
         streams.dropped-messages: sys.samza_dropped_msgs
     task:
         class: com.quantiply.samza.JythonTask
@@ -16,7 +16,6 @@ samza:
     task.class: com.quantiply.rico.samza.SamzaRunner
     task.checkpoint.factory: org.apache.samza.checkpoint.kafka.KafkaCheckpointManagerFactory
     task.checkpoint.system: kafka
-    # FIXME : This has to be a string for now.
     task.checkpoint.replication.factor: "1"
 
     # Metrics

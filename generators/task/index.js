@@ -4,6 +4,8 @@ var chalk = require('chalk');
 var yosay = require('yosay');
 var mkdirp = require('mkdirp');
 var _ = require('lodash');
+var jsyaml = require('js-yaml');
+var wiring = require("html-wiring");
 
 var parseTopicList = function(topicListStr) {
     return topicListStr.split(",")
@@ -63,10 +65,7 @@ module.exports = yeoman.generators.Base.extend({
     },
 
     writing: function() {
-        // this.directory(this.templatePath(""), "bin");
-
         var props = this.props;
-        this.log(props);
 
         var splitClassName = props.className.split(".");
         if (splitClassName.length < 2) {
@@ -117,8 +116,10 @@ module.exports = yeoman.generators.Base.extend({
             outTopicNames: outTopicNames,
             samzaTaskInputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(",")
         };
-        var cfg = this.engine(cfgTemplate, context);
-        var taskConfigPrompt = chalk.yellow.bold('\nPlease add this config to config/jobs.yml : \n \n');
-        this.log(taskConfigPrompt + cfg);
+        var jobCfg = jsyaml.load(this.engine(cfgTemplate, context));
+        var existingCfg = jsyaml.load(wiring.readFileAsString("config/jobs.yml"));
+        this.log('Merging into config/jobs.yml...');
+        this.write("config/jobs.yml", jsyaml.dump(_.merge(existingCfg, jobCfg)));
+        this.log('Run ' + chalk.yellow.bold('data/test-json.sh 10 | rico cmdline ' + props.jobName) + ' to test via stdin');
     }
 });

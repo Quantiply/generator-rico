@@ -3,7 +3,7 @@
 """Rico superpowers.
 
 Usage:
-  rico local [-d] <name> [--env=<env>]
+  rico cmdline <name> [--env=<env>]
   rico samza <name> [--env=<env>]
   rico yarn <name> [--env=<env>] [--http=<http_url>]
   rico build
@@ -14,12 +14,13 @@ Usage:
 Options:
   -h --help     Show this screen.
   --version     Show version.
-  -d            Show debug info.
 """
 
+from __future__ import print_function
 from docopt import docopt
 import subprocess
 import os
+import sys
 from os import environ as env
 import yaml
 import collections
@@ -86,7 +87,7 @@ def get_app_home():
     return None
 
 def run_command(cmd):
-  print cmd
+  print(cmd,file=sys.stderr)
   subprocess.check_call(cmd, shell=True)
     
 def install_deps(args):
@@ -98,9 +99,9 @@ def get_common_cfg(runner, processor):
   cfg.update(get_processor_cfg(runner,processor))
   
 
-def local(args):
+def cmdline(args):
   processor = args["<name>"]
-  runner = "local"
+  runner = "cmdline"
   env = "dev"
   if args["--env"]:
     env = args["--env"]
@@ -108,7 +109,7 @@ def local(args):
   # Get and merge props
 
   if not is_processor_valid(processor):
-    print "%s not found in jobs.yml" % (processor, )
+    print("%s not found in jobs.yml" % processor)
     return
 
   cfg = get_default_cfg(runner)
@@ -135,7 +136,7 @@ def samza(args):
   # Get and merge props
   cfg = get_default_cfg(runner)
   if not is_processor_valid(processor):
-    print "%s not found in jobs.yml" % (processor, )
+    print("%s not found in jobs.yml" % processor)
     return
 
   cfg.update(get_processor_cfg(runner,processor))
@@ -153,9 +154,9 @@ def samza(args):
   run_command(cmd)
 
 def copy_yarn_files():
-  print "-" * 100
-  print "Copying files to %s/build/package" % (get_app_home())
-  print "-" * 100
+  print("-" * 100)
+  print("Copying files to %s/build/package" % get_app_home())
+  print("-" * 100)
 
   copy = "rm -rf $RICO_APP_HOME/build/package/ && "
   copy += "mkdir -p $RICO_APP_HOME/build/package/lib && "
@@ -182,7 +183,7 @@ def yarn(args):
   # Merge samza and yarn props
   cfg = get_default_cfg("samza")
   if not is_processor_valid(processor):
-    print "%s not found in jobs.yml" % (processor, )
+    print("%s not found in jobs.yml" % processor)
     return
 
   cfg.update(get_default_cfg("yarn"))
@@ -231,12 +232,11 @@ def test(args):
 
 if __name__ == '__main__':
   args = docopt(__doc__, version='0.0.1')
-  # print(args)
 
   if get_app_home() is None:
-    print "RICO_APP_HOME is undefined."
-  elif args["local"] :
-    local(args)
+    print("RICO_APP_HOME is undefined.")
+  elif args["cmdline"] :
+    cmdline(args)
   elif args["samza"] :
     samza(args)
   elif args["build"]:

@@ -2,7 +2,7 @@
   "name": "generator-rico",
   "version": "0.0.0",
   "description": "Yeoman generator",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "main": "app/index.js",
   "repository": "arrawatia/generator-rico",
   "author": {
@@ -25,7 +25,9 @@
     "wrench": "^1.5.8",
     "yeoman-generator": "^0.19.0",
     "yosay": "^1.0.2",
-		"lodash": "3.10.0"
+    "lodash": "3.10.0",
+    "js-yaml": "3.3.1",
+    "html-wiring": "1.2.0"
   },
   "devDependencies": {
     "mocha": "*"
