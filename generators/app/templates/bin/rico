@@ -3,12 +3,13 @@
 """Rico superpowers.
 
 Usage:
-  rico local [-d] <name> [--env=<env>] [--full]
+  rico local [-d] <name> [--env=<env>]
   rico samza <name> [--env=<env>]
   rico yarn <name> [--env=<env>] [--http=<http_url>]
   rico build jar 
   rico package <name>
   rico install-deps
+  rico test
 Options:
   -h --help     Show this screen.
   --version     Show version.
@@ -117,14 +118,9 @@ def local(args):
   build_file = "%s/build/%s/%s.properties" % (get_app_home(), runner, processor)
   cfg_to_file(cfg, build_file)
   
-  # Run the command
-  output = 1 # Message only
-  if args["--full"]:
-    ouput = 0
   cmd = "java -Dlog4j.configuration=file:///$APP_HOME/config/log4j.properties "
-  cmd += "-jar $APP_HOME/lib/samza-*.jar "
+  cmd += "-jar $APP_HOME/lib/*.jar "
   cmd += build_file
-  cmd += " " + str(output)
 
   run_command(cmd)
 
@@ -231,21 +227,28 @@ def build_jar(args):
   run_command("mvn -f $APP_HOME/bin/pom.xml -DbuildDir=$APP_HOME/build/maven/jar -Dpkg=jar clean package")
   run_command("bash -O extglob -c 'cp $APP_HOME/build/maven/jar/!(original-*).jar $APP_HOME/lib/'")
 
-if __name__ == '__main__':
-    args = docopt(__doc__, version='0.0.1')
-    # print(args)
+def test(args):
+  cmd = "java -Dlog4j.configuration=file:///$APP_HOME/config/log4j.properties "
+  cmd += "-cp $APP_HOME/lib/*.jar org.python.util.jython $APP_HOME/bin/nosetests.py  $APP_HOME/app"
+  run_command(cmd)
 
-    if get_app_home() is None:
-      print "APP_HOME is undefined."
-    elif args["local"] :
-      local(args)
-    elif args["samza"] :
-      samza(args)
-    elif args["build"] and args["jar"]:
-      build_jar(args)
-    elif args["package"]:
-      build_package(args)
-    elif args["yarn"]:
-      yarn(args)
-    elif args["install-deps"]:
-      install_deps(args)
+if __name__ == '__main__':
+  args = docopt(__doc__, version='0.0.1')
+  # print(args)
+
+  if get_app_home() is None:
+    print "APP_HOME is undefined."
+  elif args["local"] :
+    local(args)
+  elif args["samza"] :
+    samza(args)
+  elif args["build"] and args["jar"]:
+    build_jar(args)
+  elif args["package"]:
+    build_package(args)
+  elif args["yarn"]:
+    yarn(args)
+  elif args["install-deps"]:
+    install_deps(args)
+  elif args["test"]:
+    test(args)
