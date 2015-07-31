@@ -84,12 +84,8 @@ def get_app_home():
     return None
 
 def run_command(cmd):
-  # print "Running : ", cmd
-  # print " "
-  output = subprocess.call(cmd, shell=True)
-  if not output == 0:
-    raise RuntimeError(output)
-  # print " " 
+  print cmd
+  subprocess.check_call(cmd, shell=True)
     
 def install_deps(args):
   cmd = "pip install --target %s/lib/vendor/ -r app/requirements.txt" % (get_app_home(), )
@@ -232,9 +228,8 @@ def yarn(args):
   run_command(run)
   
 def build_jar(args):
-  cmd =  "mvn -f $APP_HOME/bin/pom.xml -DbuildDir=$APP_HOME/build/maven/jar -Dpkg=jar clean package"
-  cmd += " && cp $APP_HOME/build/maven/jar/samza-*.jar $APP_HOME/lib/"
-  run_command(cmd)
+  run_command("mvn -f $APP_HOME/bin/pom.xml -DbuildDir=$APP_HOME/build/maven/jar -Dpkg=jar clean package")
+  run_command("bash -O extglob -c 'cp $APP_HOME/build/maven/jar/!(original-*).jar $APP_HOME/lib/'")
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='0.0.1')
