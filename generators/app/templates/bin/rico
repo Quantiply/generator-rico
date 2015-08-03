@@ -28,7 +28,11 @@ import collections
 def get_default_cfg(runner):
   default_file = "%s/config/default.yml" % (get_app_home(), )
   default = yaml.load(open(default_file, "r"))
-  return flatten(default[runner])
+  cfg = {}
+  if default.has_key("common"):
+    cfg = flatten(default["common"])
+  cfg.update(flatten(default[runner]))
+  return cfg
 
 def is_processor_valid(processor):
   jobs_file = "%s/config/jobs.yml" % (get_app_home(), )
