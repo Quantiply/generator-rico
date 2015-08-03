@@ -117,7 +117,7 @@ module.exports = yeoman.generators.Base.extend({
             samzaTaskInputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(",")
         };
         var jobCfg = jsyaml.load(this.engine(cfgTemplate, context));
-        var existingCfg = jsyaml.load(wiring.readFileAsString("config/jobs.yml"));
+        var existingCfg = jsyaml.load(wiring.readFileAsString("config/jobs.yml")) || {};
         this.log('Merging into config/jobs.yml...');
         this.write("config/jobs.yml", jsyaml.dump(_.merge(existingCfg, jobCfg)));
         this.log('Run ' + chalk.yellow.bold('data/test-json.sh 10 | rico cmdline ' + props.jobName) + ' to test via stdin');
