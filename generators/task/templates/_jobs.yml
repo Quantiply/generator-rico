@@ -6,9 +6,9 @@
       jython.entrypoint: <%= taskName %><% _.forEach(inTopicNames, function(name) { %>
       streams.<%- name.nickname %>: <%- name.topic %><% }); %><% _.forEach(outTopicNames, function(name) { %>
       streams.<%- name.nickname %>: <%- name.topic %><% }); %>
-    samza:
-      job.name: <%= jobName %><% if (samzaTaskInputs) { %>
-      task:
-        inputs: <%= samzaTaskInputs %><% } %>
+  samza:
+    job.name: <%= jobName %><% if (samzaTaskInputs) { %>
+    task:
+      inputs: <%= samzaTaskInputs %><% } %>
 
 ###############################################
