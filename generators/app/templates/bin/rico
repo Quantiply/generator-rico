@@ -19,7 +19,7 @@ Options:
 from __future__ import print_function
 from docopt import docopt
 import subprocess
-import os
+import os.path
 import sys
 from os import environ as env
 import yaml
@@ -51,11 +51,11 @@ def get_processor_cfg(runner, processor):
   
 def get_env_cfg(runner, env):
   env_file = "%s/config/%s.yml" % (get_app_home(), env)
-  env = yaml.load(open(env_file, "r"))
-  if env.has_key(runner):
-    return flatten(env[runner])
-  else:
-    return {}
+  if os.path.exists(env_file):
+    env = yaml.load(open(env_file, "r"))
+    if env.has_key(runner):
+      return flatten(env[runner])
+  return {}
   
 def cfg_to_file(runner_config, build_file):
   # Replace $app_home with full path
