@@ -1,4 +1,4 @@
-Rico Jython Job
+Rico Jython <%= projectName %> Jobs
 ===
 
 Getting started
