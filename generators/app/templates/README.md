@@ -1,201 +1,65 @@
-Samza jobs in Jython
+Rico Jython Job
 ===
 
 Getting started
----    
+--- 
+1. Install pre-requisites
+	* Python 2.7
+	* Java 8
+	* Maven 3.x
+
 1. Setup the env by running
  
         pip install -r bin/rico-requirements.txt
+        #Sets RICO_APP_HOME and PATH env vars
         . bin/activate
+        #One-time build of Java uber-jar
+        #Might take a long time down download jars the first time
         rico build
-        
 
-2. Run the `test` task by 
-        
-        data/test-json.sh 10 | bin/rico local test
+1. Run unit tests
 
-    This processor implements the samza Task API and is run locally by sending data over STDIN and the output is printed to stdout.
-    
-   
-Tutorial - Create a Echo processor
----
-0. Make sure you have run the getting started section.
- 
-1. Create a python module.
-    
-        cd app
-        mkdir tut
-        touch tut/__init__.py
-        touch tut/echo.py
-    
-2. Implement the Samza Task [Samza API Overview](http://samza.apache.org/learn/documentation/0.9/api/overview.html)
+		#In C-Python
+		nosetests app
+		#In Jython
+		rico test
+		
+1. Run in command line mode
 
-    ```{python}
-    from qply.base import BaseProcessor
-    from org.apache.samza.system import OutgoingMessageEnvelope
-    
-    class EchoProcessor(BaseProcessor):
-        def process(self, data, collector, coord):
-            collector.send(OutgoingMessageEnvelope(None, data.message))
-        
-    ```
+		#View available jobs
+		rico jobs
+		
+		cat data/<test_data>.json | rico cmdline <job>
+		
+1. Run in Samza local mode
 
-3. Add a job to `config/jobs.yml`
-    
-    ```{yaml}
-    echo:
-      samza:
-        job.name: test
-        task:
-          entrypoint: tut.echo.EchoProcessor
-          class: com.quantiply.samza.JythonTask
-          inputs: kafka.echo.input
-          output: kafka.echo.output
-    ```
+		#One time install of YARN, ZooKeeper, Kafka, and Confluent Platform
+		/bin/grid install all
+		
+		#Start Samza
+		rm -rf /tmp/zookeeper/ /tmp/kafka-logs/
+		./bin/grid start all
+		
+		#Create and load topics
+		./bin/create_topics.sh
+		./bin/load_topics.sh
+		
+		#View jobs
+		rico jobs
+		
+		#Wait for job to fully initialize, then stop with ^C
+		
+		rico samza <job>
+		#View output topic
+		./deploy/confluent/bin/kafka-console-consumer --zookeeper localhost:2181 --topic <out_topic> --from-beginning
+				
+		#Stop Samza
+		./bin/grid stop all
 
+1. To build a YARN package
 
-4. Run this locally :
-    
-        data/test-json.sh 10 | bin/rico local echo
+		rico package
 
-    You should see the following output.
-    
-        <snip>
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":1}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":2}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":3}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":4}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":5}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":6}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":7}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":8}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":9}}
-        {"headers":{"hi":"there"},"payload":{"mumbo":"jumbo","id":10}}
-
-5. Now, lets modify the processor so that it can run on Samza.
-
-    ```{python}
-    from qply.base import BaseProcessor
-    from org.apache.samza.system import OutgoingMessageEnvelope, SystemStream
-
-    class EchoProcessor(BaseProcessor):
-        def init(self, config, context):
-            self.output = SystemStream("kafka", config.get("task.output").replace("kafka.", ""))
-            # Print the config too.
-            print("[init] config : " + str(config))
-            
-        def process(self, data, collector, coord):
-            collector.send(OutgoingMessageEnvelope(self.output, data.message))
-        
-    ```
-    
-
-6. Run it on Samza
-
-        bin/grid install all
-        bin/grid start zookeeper
-        bin/grid start kafka
-        
-    Create kafka topics.
-        
-        ./deploy/confluent/bin/kafka-topics --zookeeper localhost:2181  --partitions 1 --replication-factor 1 --create --topic echo.input
-        ./deploy/confluent/bin/kafka-topics --zookeeper localhost:2181  --partitions 1 --replication-factor 1 --create --topic echo.output
-    
-    Run the Samza job in another terminal window.
-        
-        bin/rico samza echo
-        
-    You should see a log like this:
-    
-        <samza log ... >
-        
-    Push some data into Kafka
-    
-        data/test-json.sh 10000 | ./deploy/confluent/bin/kafka-console-producer --broker-list localhost:9092 --topic echo.input
-        
-    See if the output topic has data now 
-
-        ./deploy/confluent/bin/kafka-console-consumer --zookeeper localhost:2181 --topic echo.output --from-beginning
-        
-7. Let's run it on YARN.
-    
-        bin/grid run yarn
-        bin/rico yarn echo
-        
-    Now send some more data to Kafka input topic and watch the output topic as we did above.
-    
-        The YARN console is at : localhost:8088
-        
-        
-8. Next Steps: Take a look at the metrics job `app/rico/metrics.py` . It is run in production for processing Samza metrics.
-
-
-Code Loading (Some links are outdated.)
----
-
-1. The rico script launches the Jython Samza Task. [JythonTask.java](https://github.com/Quantiply/jython-samza/blob/master/src/main/java/com/quantiply/samza/JythonTask.java)
-2. The Jython Samza task loads the Jython runtime using JSR-223. [code](https://github.com/Quantiply/jython-samza/blob/master/src/main/java/com/quantiply/samza/JythonTask.java#L21-L26)
-3. Then the Jython bootstapping code is loaded. The bootstapping code requires two parameters : 
-    * The APP_HOME directory - By convention is this one dir above the jar dir. [code](https://github.com/Quantiply/jython-samza/blob/master/src/main/java/com/quantiply/samza/JythonTask.java#L53-L55)
-    * The Jython class to run - This class has to implement all the methods in the Task interface. The task interface is just an aggeregation of all Samza Task interfaces. [Task.java](https://github.com/Quantiply/jython-samza/blob/master/src/main/java/com/quantiply/samza/Task.java)
-    
-4. The bootstrapping code then sets up the jython classpath, loads the Jython class and assigns it to a global variable `com_quantiply_rico_entrypoint`. [bootstrap.py](https://github.com/Quantiply/metrics-jython/blob/master/lib/rico/bootstrap.py)
-
-5. Finally, the Java Task gets the Jython task by accessing the global Jython object `com_quantiply_rico_entrypoint` and assiging it to a Task variable. [code](https://github.com/Quantiply/jython-samza/blob/master/src/main/java/com/quantiply/samza/JythonTask.java#L46-L50)
-
-6. From this point on, the Jython class is treated as a Java class implementing the Task interface.
-
-
-Rico tool
----
-    
-    rico local [-d] <name> [--env=<env>] [--full]
-    rico samza <name> [--env=<env>]
-    rico yarn  <name> [--env=<env>] [--http=<http_url>]
-    rico build
-    rico package <package_name>
-    rico install-deps
-
-Pip fix :
-http://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
-
-
-
-Directory structure
----
-The processors are in `app` dir.
-
-
-```
-.
-├── app
-├── bin
-│   └── rico
-├── config
-├── data
-├── lib
-├── logs
-└── tmp
-└── build
-└── stores
-└── deploy
-```
-
-Let's look at it piece by piece: 
-
-- **app**: The directory with all the action. It's where you define **processors** which are your fundamental operations or "verbs", which are passed records and parse, filter, augment, normalize, or split them.
-
-- **config**: Where you place all application configuration for all environments
-    - **jobs.yml**: Defines all samza job settings.
-- **data**: Holds sample data in flat files. You'll develop and test your application using this data.
-- **requirements.txt**: Dependency management using pip.
-- **lib**: Holds any code you want to use in your application but that isn't "part of" your application (like vendored libraries, &c.).
-- **log**: A good place to stash logs.
-- **test**: Holds all your unit tests.
-- **tmp**: A good place to stash temporary files.
-- **build**: All build artifacts are placed here.
-- **stores**: A scratch dir for Samza local (RocksDB) stores.
-- **deploy**: Local installs of confluent platform and YARN.
 
 
 

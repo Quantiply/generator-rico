@@ -42,7 +42,8 @@ def get_jobs_cfg():
 
 def list_jobs(args):
   jobs = get_jobs_cfg()
-  print("\n".join(jobs.keys()))
+  if jobs:
+    print("\n".join(jobs.keys()))
 
 def is_processor_valid(processor):
   jobs = get_jobs_cfg()
