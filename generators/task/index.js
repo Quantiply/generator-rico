@@ -76,13 +76,19 @@ module.exports = yeoman.generators.Base.extend({
 
         var dir = "app";
         if (splitClassName.length > 2) {
-            var packageName = props.className.split(".").slice(0, -2).join("/");
-            dir = "app/" + packageName;
+            var pathList = props.className.split(".").slice(0, -2);
+            
+            dir = ["app"].concat(pathList).join("/");
             mkdirp(dir);
-            this.fs.copy(
-                this.templatePath('__init__.py'),
-                this.destinationPath(dir + "/__init__.py")
-            );
+            
+            var currentPathList = ["app"];
+            pathList.forEach(function (moduleDir) {
+                currentPathList.push(moduleDir);
+                this.fs.copy(
+                    this.templatePath('__init__.py'),
+                    this.destinationPath(currentPathList.concat("__init__.py").join("/"))
+                );
+            }.bind(this));
         }
 
         var topicNames = _.map(props.nicknames, function (nickname, topic) {
