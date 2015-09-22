@@ -7,6 +7,7 @@
 To install generator-rico from npm, run:
 
 ```bash
+npm install -g yeoman
 npm install -g git+https://git@github.com/quantiply/generator-rico.git
 ```
 
