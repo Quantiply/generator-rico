@@ -18,6 +18,12 @@ module.exports = yeoman.generators.Base.extend({
                 message: 'What is your project name ?'
             },
             {
+                name: 'useCustomMavenRepo',
+                message: 'Use a custom maven repo?',
+                type: 'confirm',
+                'default': false
+            },
+            {
                 name: 'useElasticsearch',
                 message: 'Will this project load data into Elasticsearch?',
                 type: 'confirm',
@@ -27,7 +33,26 @@ module.exports = yeoman.generators.Base.extend({
         ];
         this.prompt(prompts, function(props) {
             this.props = props;
-            done();
+
+            if (this.props.useCustomMavenRepo) {
+                var mavenPrompts = [
+                    {
+                        name: 'mavenCentralMirror',
+                        message: 'What is the url of your mirror of Maven Central?'
+                    },
+                    {
+                        name: 'quantiplyMirror',
+                        message: 'What is the url of your mirror of Quantiply Maven Repo?'
+                    }
+                ];
+                this.prompt(mavenPrompts, function(props) {
+                    this.props.customRepos = props;
+                    done();
+                }.bind(this));
+            }
+            else {
+                done();
+            }
         }.bind(this));
     },
 

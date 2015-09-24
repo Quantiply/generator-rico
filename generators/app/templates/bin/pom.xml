@@ -18,7 +18,19 @@
   </properties>
 
 
-  <repositories>
+  <repositories><%
+if (useCustomMavenRepo) { %>
+    <repository>
+      <id>central</id>
+      <name>Maven Central Mirror</name>
+      <url><%= customRepos.mavenCentralMirror %></url>
+    </repository>
+    <repository>
+      <id>quantiply</id>
+      <name>Quantiply Maven Mirror</name>
+      <url><%= customRepos.quantiplyMirror %></url>
+    </repository><%
+} else { %>
     <repository>
       <id>aws-release</id>
       <name>AWS S3 Release Repository</name>
@@ -31,8 +43,18 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
-  </repositories>
+    </repository><%
+} %>
+  </repositories><%
+if (useCustomMavenRepo) { %>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <name>Maven Central Mirror</name>
+      <url><%= customRepos.mavenCentralMirror %></url>
+    </pluginRepository>
+  </pluginRepositories><%
+} %>
 
   <profiles>
     <profile>
@@ -198,13 +220,15 @@ if (useElasticsearch) { %>
       </dependency>
     </dependencies>
     <build>
-      <directory><%= '${buildDir}' %></directory>
+      <directory><%= '${buildDir}' %></directory><%
+if (!useCustomMavenRepo) { %>
       <extensions>
         <extension>
           <groupId>org.kuali.maven.wagons</groupId>
           <artifactId>maven-s3-wagon</artifactId>
           <version>1.2.1</version>
         </extension>
-      </extensions>
+      </extensions><%
+} %>
     </build>
   </project>
