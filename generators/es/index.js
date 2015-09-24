@@ -57,8 +57,7 @@ module.exports = yeoman.generators.Base.extend({
             jobName: props.jobName,
             inTopicNames: inTopicNames,
             esStreams: _.pluck(inTopicNames, 'nickname'),
-            samzaTaskInputs: "someShit,otherThing"
-            // samzaTaskInputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(",")
+            samzaTaskInputs: props.inTopics.map(function(topic) {return "kafka." + topic;}).join(",")
         };
         var jobCfg = jsyaml.load(this.engine(cfgTemplate, context));
         var existingCfg = jsyaml.load(wiring.readFileAsString("config/jobs.yml")) || {};
