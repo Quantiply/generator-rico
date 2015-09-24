@@ -16,7 +16,14 @@ module.exports = yeoman.generators.Base.extend({
             {
                 name: 'projectName',
                 message: 'What is your project name ?'
+            },
+            {
+                name: 'useElasticsearch',
+                message: 'Will this project load data into Elasticsearch?',
+                type: 'confirm',
+                'default': false
             }
+            
         ];
         this.prompt(prompts, function(props) {
             this.props = props;

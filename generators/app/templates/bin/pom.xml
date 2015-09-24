@@ -180,7 +180,14 @@
       <groupId>com.quantiply.rico</groupId>
       <artifactId>rico-jython</artifactId>
       <version><%= '${rico.version}' %></version>
-    </dependency>
+    </dependency><%
+if (useElasticsearch) { %>
+    <dependency>
+      <groupId>com.quantiply.rico</groupId>
+      <artifactId>rico-samza-elasticsearch</artifactId>
+      <version><%= '${rico.version}' %></version>
+    </dependency><%
+} %>
     <!-- 
       rhoover - ran into conflict with Avro + Samza versions of jackson-core-asl
       -->

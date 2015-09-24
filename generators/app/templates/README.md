@@ -20,7 +20,7 @@ Getting started
 1. Run unit tests
 
 		#In C-Python
-		nosetests app
+		python bin/nosetests.py app
 		#In Jython
 		rico test
 		

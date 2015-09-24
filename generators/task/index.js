@@ -20,19 +20,24 @@ module.exports = yeoman.generators.Base.extend({
 
         this.log('Generate scaffold for ' + chalk.red('Rico') + ' task! \n');
 
-        var prompts = [{
-            name: 'jobName',
-            message: 'What job does this task belong to ?'
-        }, {
-            name: 'className',
-            message: 'What is your task\'s (fully qualified) class name ?'
-        }, {
-            name: 'kafkaInputs',
-            message: 'What Kafka topic(s) does this task read from ?'
-        }, {
-            name: 'kafkaOutputs',
-            message: 'What Kafka topic(s) does this task write to ?'
-        }];
+        var prompts = [
+            {
+                name: 'jobName',
+                message: 'What job does this task belong to ?'
+            }, 
+            {
+                name: 'className',
+                message: 'What is your task\'s (fully qualified) class name ?'
+            },
+            {
+                name: 'kafkaInputs',
+                message: 'What Kafka topic(s) does this task read from ?'
+            },
+            {
+                name: 'kafkaOutputs',
+                message: 'What Kafka topic(s) does this task write to ?'
+            }
+        ];
 
         this.prompt(prompts, function(props) {
             this.props = props;
