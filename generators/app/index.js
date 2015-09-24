@@ -77,5 +77,8 @@ module.exports = yeoman.generators.Base.extend({
         this.log('Run ' + chalk.yellow.bold('rico install-deps') + ' to install job dependencies');
         this.log('Run ' + chalk.yellow.bold('rico build') + ' to build an uber-jar of java dependencies');
         this.log('Run ' + chalk.yellow.bold('yo rico:task') + ' to generate a job task skeleton');
+        if (this.props.useElasticsearch) {
+            this.log('Run ' + chalk.yellow.bold('yo rico:es') + ' to generate config for loading into Elasticsearch');
+        }
     }
 });
