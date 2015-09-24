@@ -1,0 +1,35 @@
+<%= jobName %>:
+  samza:
+    job.name: <%= jobName %>
+    rico:<%
+_.forEach(inTopicNames, function(name) { %>
+      streams.<%= name.nickname %>: <%= name.topic %><%
+}); %>
+      es:
+        streams: <%= esStreams.join(",") %>
+        index.date.format: .yyyy
+        #Kibana index templating requires UTC time
+        index.date.zone: Etc/UTC
+        stream:<%
+_.forEach(esStreams, function(name) { %>
+          <%= name %>:
+            index.prefix: <%= name %>
+            doc.type: <%= name %><%
+}); %>
+      drop.on.error: false
+    task:
+      class: com.quantiply.samza.task.ESPushTask
+      inputs: <%= samzaTaskInputs %>
+      systems.kafka:
+        samza.key.serde: byte
+        samza.msg.serde: byte
+      systems.es:
+        samza.factory: org.apache.samza.system.elasticsearch.ElasticsearchSystemFactory
+        client.factory: org.apache.samza.system.elasticsearch.client.TransportClientFactory
+        index.request.factory: com.quantiply.samza.elasticsearch.IndexRequestFromKey
+        client.transport.host: localhost
+        client.transport.port: 9300
+        bulk.flush.interval.ms: 100
+        bulk.flush.interval.ms: 100
+        bulk.flush.max.actions: 10000
+        bulk.flush.max.size.mb: 10

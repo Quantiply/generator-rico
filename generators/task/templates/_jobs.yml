@@ -1,5 +1,3 @@
-###############################################
-
 <%= jobName %>:
   common:
     rico:
@@ -10,5 +8,3 @@
     job.name: <%= jobName %><% if (samzaTaskInputs) { %>
     task:
       inputs: <%= samzaTaskInputs %><% } %>
-
-###############################################

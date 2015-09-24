@@ -23,11 +23,11 @@ module.exports = yeoman.generators.Base.extend({
         var prompts = [
             {
                 name: 'jobName',
-                message: 'What job does this task belong to ?'
+                message: 'What name do you want for the job ?'
             }, 
             {
                 name: 'className',
-                message: 'What is your task\'s (fully qualified) class name ?'
+                message: 'What is your task\'s (fully qualified) class name (com.foo.ParseTask) ?'
             },
             {
                 name: 'kafkaInputs',
