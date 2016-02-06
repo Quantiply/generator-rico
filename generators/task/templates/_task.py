@@ -2,12 +2,12 @@ from com.quantiply.samza.task import BaseTask
 from org.apache.samza.system import OutgoingMessageEnvelope
 
 class <%= taskName %>(BaseTask):
-  
+
   def _init(self, config, context, metric_adaptor):<%
 _.forEach(outTopicNames, function(out) { %>
     self.<%- out.nickname %> = self.getSystemStream("<%- out.nickname %>")<%
 });%><%
-if (inTopicNames.length > 1) { 
+if (inTopicNames.length > 1) {
   _.forEach(inTopicNames, function(inName) {
 %>
     self.registerHandler("<%- inName.nickname %>", self.<%- inName.processFunc %>)<%
