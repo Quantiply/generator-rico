@@ -20,12 +20,12 @@ _.forEach(esStreams, function(name) { %>
     task:
       class: com.quantiply.samza.task.ESPushTask
       inputs: <%= samzaTaskInputs %>
-      systems.kafka:
-        samza.key.serde: byte
-        samza.msg.serde: byte
-      systems.es:
-        samza.factory: com.quantiply.samza.system.elasticsearch.ElasticsearchSystemFactory
-        http.host: localhost
-        http.port: 9200
-        flush.interval.ms: 500
-        flush.max.actions: 1000
+    systems.kafka:
+      samza.key.serde: byte
+      samza.msg.serde: byte
+    systems.es:
+      samza.factory: com.quantiply.samza.system.elasticsearch.ElasticsearchSystemFactory
+      http.host: localhost
+      http.port: 9200
+      flush.interval.ms: 500
+      flush.max.actions: 1000
